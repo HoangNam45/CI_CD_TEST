@@ -35,13 +35,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Copy docker-compose.yml to VPS (Project-Specific Folder)
+      - name: Copy docker-compose.yml & database scripts to VPS
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           password: ${{ secrets.VPS_PASSWORD }}
-          source: "docker-compose.yml"
+          source: |
+            docker-compose.yml
+            Shopee_Backend/database
           target: "/home/${{ secrets.VPS_USER }}/projects/shopee-backend"
 
       - name: SSH into VPS and deploy (Project-Specific)
