@@ -36,7 +36,7 @@ jobs:
 
     steps:
       - name: Debug - List files in repo
-          run:ls -R
+        run: ls -R
       - name: Copy docker-compose.yml & database scripts to VPS
         uses: appleboy/scp-action@v0.1.4
         with:
