@@ -25,10 +25,10 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
-      - name: Build and push Docker image
+      - name: Build and push backend image using Docker Compose
         run: |
-          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/my-backend:latest .
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/my-backend:latest
+          docker compose build backend
+          docker compose push backend
 
   deploy:
     needs: build
@@ -43,6 +43,4 @@ jobs:
           password: ${{ secrets.VPS_PASSWORD }}
           script: |
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/my-backend:latest
-            docker stop my-backend || true
-            docker rm my-backend || true
-            docker run -d --name my-backend -p 3000:3000 --env-file .env ${{ secrets.DOCKER_HUB_USERNAME }}/my-backend:latest
+            docker compose up -d
