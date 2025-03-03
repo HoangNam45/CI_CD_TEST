@@ -47,7 +47,7 @@ jobs:
           password: ${{ secrets.VPS_PASSWORD }}
           source: |
             docker-compose.yml
-            Shopee_Backend/database
+            Shopee_Backend/database/init.sql
           target: "/home/${{ secrets.VPS_USER }}/projects/shopee-backend"
 
       - name: SSH into VPS and deploy (Project-Specific)
