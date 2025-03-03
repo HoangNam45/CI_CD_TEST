@@ -1,0 +1,59 @@
+version: "3.8"
+
+services:
+  
+  backend:
+    build:
+      context: ./Shopee_Backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    depends_on:
+      database:
+        condition: service_healthy  # Chờ database sẵn sàng trước khi chạy backend
+    environment:
+      DB_HOST: database
+      DB_USER: sa
+      DB_PASSWORD: StrongP@ssw0rd!
+      DB_NAME: Shopee
+      DB_TRY_AGAIN: "true"
+    networks:
+      - app-network
+
+  database:
+    image: "mcr.microsoft.com/mssql/server:2022-latest"
+    container_name: ci_cd_test
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "StrongP@ssw0rd!"
+      ACCEPT_EULA: "Y"
+    networks:
+      - app-network
+    volumes:
+      - mssql_data:/var/opt/mssql
+      - ./Shopee_Backend/database:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: [ "CMD", "/opt/mssql-tools18/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "StrongP@ssw0rd!", "-Q", "IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Users') SELECT 1", "-C" ]
+      interval: 5s
+      retries: 10
+      start_period: 40s
+    entrypoint: ["/bin/bash", "-c", "
+      /opt/mssql/bin/sqlservr &  
+      echo 'Waiting for SQL Server to start...';  
+      sleep 20;  
+      until /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P StrongP@ssw0rd! -Q 'SELECT 1' -C &>/dev/null; do  
+        echo 'SQL Server is not ready yet. Retrying in 5 seconds...';  
+        sleep 5;  
+      done;  
+      echo 'SQL Server is up! Running init.sql';  
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P StrongP@ssw0rd! -i /docker-entrypoint-initdb.d/init.sql -C;  
+      tail -f /dev/null  
+    "]
+   
+  
+volumes:
+  mssql_data:
+
+networks:
+  app-network:
