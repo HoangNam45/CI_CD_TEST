@@ -3,9 +3,7 @@ version: "3.8"
 services:
   
   backend:
-    build:
-      context: ./Shopee_Backend
-      dockerfile: Dockerfile
+    image: ${{ secrets.DOCKER_HUB_USERNAME }}/my-backend:latest
     ports:
       - "5000:5000"
     depends_on:
@@ -32,7 +30,7 @@ services:
       - app-network
     volumes:
       - mssql_data:/var/opt/mssql
-      - ./Shopee_Backend/database:/docker-entrypoint-initdb.d
+      - ./database:/docker-entrypoint-initdb.d
     healthcheck:
       test: [ "CMD", "/opt/mssql-tools18/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "StrongP@ssw0rd!", "-Q", "IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Users') SELECT 1", "-C" ]
       interval: 5s
