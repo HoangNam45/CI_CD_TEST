@@ -3,7 +3,7 @@ version: "3.8"
 services:
   
   backend:
-    image: ${{ secrets.DOCKER_HUB_USERNAME }}/my-backend:latest
+    image: namhoang/my-backend:latest
     ports:
       - "5000:5000"
     depends_on:
