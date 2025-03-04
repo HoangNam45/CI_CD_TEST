@@ -58,6 +58,7 @@ jobs:
           source: |
             Shopee_Backend/database/init.sql
           target: "/home/${{ secrets.VPS_USER }}/projects/shopee-backend/database"
+          strip_components: 2
           
 
       - name: SSH into VPS and deploy
